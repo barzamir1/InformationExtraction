@@ -31,7 +31,7 @@ def StringLiteral(string):
 
 #returns rdflib.Literal of type integer
 def IntLiteral(integer):
-    result = string.replace(',', '').split()[0]; #clear non-digit characters
+    result = integer.replace(',', '').split()[0]; #clear non-digit characters
     return rdflib.Literal(result, datatype=rdflib.XSD.integer);
 
 #extract dob of a president or a prime minister
@@ -165,11 +165,11 @@ def CountryList():
         #get more details for this country
         CountryPage(countryName, countryLink);
 
-        #if i==5: break;
+        #if i==1: break;
         i+=1;
     
     jersyLink='https://en.wikipedia.org/wiki/Jersey'
-    ontology.add((getEntityRef('Jersey'), jersyLink, StringLiteral(jersyLink)));
+    ontology.add((getEntityRef('Jersey'), wikiLink, StringLiteral(jersyLink)));
     CountryPage(getEntityRef('Jersy'), jersyLink);
     
         
