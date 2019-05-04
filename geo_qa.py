@@ -234,7 +234,7 @@ def ParseQustion(question):
             #What is the area of <country>
             query = "select ?area where {{ <{}> <{}> ?area . }}".format(country, area);
             answerType = 'number';
-            km = ' km^2';
+            km = ' km2';
         if tokens[3]=='government':
             #What is the government of <country>
             query = "select ?gov where {{ <{}> <{}> ?gov .}}".format(country, government);
