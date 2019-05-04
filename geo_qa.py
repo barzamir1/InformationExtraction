@@ -31,12 +31,8 @@ def StringLiteral(string):
 
 #returns rdflib.Literal of type integer
 def IntLiteral(integer):
-    result = CleanNumericString(integer);
+    result = string.replace(',', '').split()[0]; #clear non-digit characters
     return rdflib.Literal(result, datatype=rdflib.XSD.integer);
-
-#remove any non-digit characters in string
-def CleanNumericString(string):
-    return re.sub('[^0-9]', '', string);
 
 #extract dob of a president or a prime minister
 def PersonPage(personName, url):
@@ -161,11 +157,9 @@ def CountryList():
     for tr in countryTable:
         countryName = tr.xpath('./td[2]/a/text()')[0];
         countryLink = wiki_prefix + tr.xpath('./td[2]/a/@href')[0];
-        #countryPopulation = tr.xpath('./td[6]/text()')[0];
         if debug: print("Country %s - starting CountryPage"%countryName);
 
         #add to Graph
-        #ontology.add((getEntityRef(countryName), population, IntLiteral(countryPopulation)));
         ontology.add((getEntityRef(countryName), wikiLink, StringLiteral(countryLink)));
 
         #get more details for this country
@@ -173,7 +167,11 @@ def CountryList():
 
         #if i==5: break;
         i+=1;
-
+    
+    jersyLink='https://en.wikipedia.org/wiki/Jersey'
+    ontology.add((getEntityRef('Jersey'), jersyLink, StringLiteral(jersyLink)));
+    CountryPage(getEntityRef('Jersy'), jersyLink);
+    
         
 ########################################
 # Step 2 - Parse and answare Questions #
@@ -187,13 +185,13 @@ def AnswerQuestion(query, additionalString, answerType):
     result = ontology.query(query);
     if len(result)==0:
         return 'error';
-    for res in result:
-        answer = res[0];
-        break; #only one answer needed
 
-    if answerType=='entity':
-        answer = answer.replace(relationPrefix, '').replace('_', ' ').capitalize();
+    if answerType=='entity': #might be more than 1 answer
+        answer = ', '.join(res[0].replace(relationPrefix, '').replace('_', ' ')
+                          .title() for res in result);
         return additionalString + answer;
+
+    answer = [res[0] for res in result][0]; #should be only one result
     if answerType=='number':
         return additionalString + "{:,}".format(answer.value); #format answer as number, seperated by commas
     else:
